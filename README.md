@@ -16,5 +16,9 @@ into the parent folder of violence detection project root.
     Conda: https://pypi.org/project/conda/ or
     
     Anaconda https://docs.anaconda.com/anaconda/install/
+    
+4. Create conda environment (run in project root folder):
+ 
+conda create --name <env> --file requirements.txt
 
-4. Run setup.py in the root folder
+5. Run Alphapose's setup.py in the Alphapose root folder
