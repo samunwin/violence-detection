@@ -1,2 +1,1 @@
-
-
+os.system('python open_pose_wrapper.py --cfg AlphaPose/pretrained_models/256x192_res152_lr1e-3_1x-duc.yaml --checkpoint AlphaPose/pretrained_models/fast_421_res152_256x192.pth --video dataset/NonViolence/NV_1.mp4 --outdir dataset')
