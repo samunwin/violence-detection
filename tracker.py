@@ -7,6 +7,8 @@ import os
 from scipy.spatial import distance as dist
 from math import sqrt
 
+from util import get_pose_part
+
 results_dir = "dataset/results/"
 csv_dir = "dataset/csvs/"
 
@@ -16,7 +18,8 @@ file_count = 0
 
 for dir in os.listdir(results_dir):
     if file_count == 1:
-            break
+        break
+
     for file in os.listdir(results_dir + dir):
 
         ct = CentroidTracker()
@@ -24,7 +27,7 @@ for dir in os.listdir(results_dir):
         if dir.startswith("NV"):
             violent = 0
         else:
-            violent = "todo"
+            violent = 1
 
         with open(results_dir + dir + "/"+ file, 'r') as file:
             json_src = json.loads(file.read())
@@ -36,7 +39,14 @@ for dir in os.listdir(results_dir):
             image_ids.add(frame)
 
         with open(csv_dir + dir + '.csv', mode='w', newline='') as csv_file:
-            fieldnames = ['frame', 'object_id', 'keypoints', 'velocities','violent']
+            fieldnames = ['frame', 'object_id']
+            for i in range(0, 17):
+                fieldnames.append(get_pose_part(i)+"X")
+                fieldnames.append(get_pose_part(i)+"Y")
+                fieldnames.append(get_pose_part(i)+"C")
+                fieldnames.append(get_pose_part(i) + "V")
+
+            fieldnames.append('violent')
             writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
             writer.writeheader()
             frame_num = 0
@@ -106,8 +116,26 @@ for dir in os.listdir(results_dir):
                     print(image_id, " Result: ", result_count)
 
                     for (objectID, centroid) in objects.items():
-                        if np.array_equal(centroid, [cX, cY]):  
-                            writer.writerow({'frame': frame_num, 'object_id': objectID, 'keypoints': result['keypoints'], 'velocities': vels,'violent': violent})
+                        if np.array_equal(centroid, [cX, cY]):
+                            row = {'frame': frame_num, 'object_id': objectID, 'violent': violent}
+                            for i in range(0, 51, 3):
+                                label = get_pose_part(i//3)+"X"
+                                row[label] = result['keypoints'][i]
+
+                            for i in range(1, 51, 3):
+                                label = get_pose_part(i//3)+"Y"
+                                row[label] = result['keypoints'][i]
+
+                            for i in range(2, 51, 3):
+                                label = get_pose_part(i//3)+"C"
+                                row[label] = result['keypoints'][i]
+
+                            for i in range(0, 17):
+                                value = vels[i]
+                                label = get_pose_part(i)+"V"
+                                row[label] = value
+                            print(row)
+                            writer.writerow(row)
                             print("ID:", format(objectID), "Centroid:", format(centroid), "Pose Info: ", 'velocities:', vels, format(result['keypoints']))
                     result_count += 1
                 frame_num += 1
