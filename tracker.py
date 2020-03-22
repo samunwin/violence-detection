@@ -105,7 +105,7 @@ for dir in os.listdir(results_dir):
                             if row[i] == 0 and col[i] == 0:
                                 vels.append(0)
                             else:
-                                vels.append(1 / sqrt(row[i]**2 + col[i]**2))
+                                vels.append(sqrt(row[i]**2 + col[i]**2))
 
                     previous_val = {'centroids': pose_centroids}
 
