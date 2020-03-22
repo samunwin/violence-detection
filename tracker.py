@@ -17,7 +17,7 @@ file_count = 0
 # os.makedirs(csv_dir)
 
 for dir in os.listdir(results_dir):
-    if file_count == 1:
+    if file_count == 10:
         break
 
     for file in os.listdir(results_dir + dir):
@@ -85,11 +85,14 @@ for dir in os.listdir(results_dir):
                         if y > maxy:
                             maxy = y
 
-                    for i in range(0, 17):
-                        pose_centroids.append([xvals[i], yvals[i]])
-                    
                     cX = int((minx + maxx) / 2.0)
                     cY = int((miny + maxy) / 2.0)
+
+                    xvals = list(map(lambda value: value - cX, xvals))
+                    yvals = list(map(lambda value: value - cY, yvals))
+
+                    for i in range(0, 17):
+                        pose_centroids.append([xvals[i], yvals[i]])
 
                     D = [0 for i in range(0,17)]
 
@@ -118,6 +121,7 @@ for dir in os.listdir(results_dir):
                     for (objectID, centroid) in objects.items():
                         if np.array_equal(centroid, [cX, cY]):
                             row = {'frame': frame_num, 'object_id': objectID, 'violent': violent}
+
                             for i in range(0, 51, 3):
                                 label = get_pose_part(i//3)+"X"
                                 row[label] = result['keypoints'][i]
@@ -134,9 +138,9 @@ for dir in os.listdir(results_dir):
                                 value = vels[i]
                                 label = get_pose_part(i)+"V"
                                 row[label] = value
-                            print(row)
+                            #print(row)
                             writer.writerow(row)
-                            print("ID:", format(objectID), "Centroid:", format(centroid), "Pose Info: ", 'velocities:', vels, format(result['keypoints']))
+                            #print("ID:", format(objectID), "Centroid:", format(centroid), "Pose Info: ", 'velocities:', vels, format(result['keypoints']))
                     result_count += 1
                 frame_num += 1
     file_count += 1
